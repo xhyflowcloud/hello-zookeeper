@@ -1,13 +1,10 @@
 package net.lovenn.zookeeper;
 
 import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
 
 public class ZookeeperServer implements Watcher {
     private static final String HOST = "127.0.0.1";
@@ -23,10 +20,10 @@ public class ZookeeperServer implements Watcher {
 //        while (zk.getState() != ZooKeeper.States.CONNECTED) {
 //            System.out.println("NOT CONNECTION");
 //        }
-        if(zk.exists("/localhost", null) == null) {
+        if (zk.exists("/localhost", null) == null) {
             zk.create("/localhost", null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
-        if(zk.exists("/localhost/config", null) == null) {
+        if (zk.exists("/localhost/config", null) == null) {
             zk.create("/localhost/config", null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         }
         new Thread(new Runnable() {
@@ -63,15 +60,15 @@ public class ZookeeperServer implements Watcher {
 //            }
 //            System.out.println("zk connection failed");
 //        }
-        if(event.getType() == Event.EventType.NodeCreated) {
+        if (event.getType() == Event.EventType.NodeCreated) {
 
         }
     }
 
     public void create(String path, String value) {
-        if(value != null && !value.equals("null")) {
+        if (value != null && !value.equals("null")) {
             try {
-                if(zk.exists(path, null) == null) {
+                if (zk.exists(path, null) == null) {
                     zk.create(path, value.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 }
             } catch (KeeperException e) {
@@ -103,8 +100,8 @@ public class ZookeeperServer implements Watcher {
 
         public UpdateWatcher(String path) {
             this.path = path;
-            for(Field f: Contants.class.getDeclaredFields()) {
-                if(f.getName().equals(path.substring(path.lastIndexOf('/') + 1, path.length()))) {
+            for (Field f : Contants.class.getDeclaredFields()) {
+                if (f.getName().equals(path.substring(path.lastIndexOf('/') + 1, path.length()))) {
                     field = f;
                     break;
                 }
@@ -112,10 +109,10 @@ public class ZookeeperServer implements Watcher {
         }
 
         public void process(WatchedEvent event) {
-            if(event.getType() == Event.EventType.NodeDataChanged) {
+            if (event.getType() == Event.EventType.NodeDataChanged) {
                 try {
                     byte[] data = zk.getData(path, new UpdateWatcher(path), new Stat());
-                    if(field != null && field.getType() == String.class) {
+                    if (field != null && field.getType() == String.class) {
                         field.setAccessible(true);
                         try {
                             field.set(Contants.class, new String(data));
@@ -134,50 +131,50 @@ public class ZookeeperServer implements Watcher {
 
     public void registerNodes(Class<?> contants) {
 
-        if(contants != null) {
+        if (contants != null) {
             Field[] toCreateFields = contants.getDeclaredFields();
 
-            if(toCreateFields.length > 0) {
-               for (Field f: toCreateFields) {
-                   f.setAccessible(true);
+            if (toCreateFields.length > 0) {
+                for (Field f : toCreateFields) {
+                    f.setAccessible(true);
 
-                   String value = null;
-                   try {
-                       if(f.getType() == String.class) {
+                    String value = null;
+                    try {
+                        if (f.getType() == String.class) {
                             value = (String) f.get(contants);
-                       }
-                       if(f.getType() == Integer.class || f.getType() == int.class) {
+                        }
+                        if (f.getType() == Integer.class || f.getType() == int.class) {
                             value = String.valueOf(f.get(contants));
-                       }
-                       if(f.getType() == Long.class || f.getType() == long.class) {
-                           value = String.valueOf(f.get(contants));
-                       }
-                       if(f.getType() == Float.class || f.getType() == float.class) {
-                           value = String.valueOf(f.get(contants));
-                       }
-                       if(f.getType() == Double.class || f.getType() == double.class) {
-                           value = String.valueOf(f.get(contants));
-                       }
-                       create(BASE_PATH + f.getName(), value);
-                   } catch (IllegalAccessException e) {
-                       e.printStackTrace();
-                   }
-               }
+                        }
+                        if (f.getType() == Long.class || f.getType() == long.class) {
+                            value = String.valueOf(f.get(contants));
+                        }
+                        if (f.getType() == Float.class || f.getType() == float.class) {
+                            value = String.valueOf(f.get(contants));
+                        }
+                        if (f.getType() == Double.class || f.getType() == double.class) {
+                            value = String.valueOf(f.get(contants));
+                        }
+                        create(BASE_PATH + f.getName(), value);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
 
     public void registerNodesEvent(Class<?> contants) {
 
-        if(contants != null) {
+        if (contants != null) {
             Field[] toCreateFields = contants.getDeclaredFields();
 
-            if(toCreateFields.length > 0) {
-                for (Field f: toCreateFields) {
+            if (toCreateFields.length > 0) {
+                for (Field f : toCreateFields) {
                     f.setAccessible(true);
 
                     String value = null;
-                    if(f.getType() == String.class) {
+                    if (f.getType() == String.class) {
                         sub(BASE_PATH + f.getName());
                     }
                 }
