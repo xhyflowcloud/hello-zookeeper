@@ -40,6 +40,7 @@ public class ZookeeperConfigSubject implements ConfigSubject {
         observers.remove(configObserver.getPath());
         try {
             zk.removeWatches(getQualityPath(configObserver.getPath()), new EmptyWatcher(), Watcher.WatcherType.Data, true);
+            observers.remove(configObserver.getPath());
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (KeeperException e) {
@@ -60,7 +61,7 @@ public class ZookeeperConfigSubject implements ConfigSubject {
         }
     }
 
-    private String getQualityPath(String path) {
+    public static String getQualityPath(String path) {
         if (path == null) {
             return "";
         }
@@ -93,7 +94,7 @@ public class ZookeeperConfigSubject implements ConfigSubject {
         }
     }
 
-    public class EmptyWatcher implements Watcher{
+    public class EmptyWatcher implements Watcher {
         public void process(WatchedEvent event) {
 
         }
