@@ -42,7 +42,7 @@ public class ConfigSubjectService {
                         value = String.valueOf(f.get(contants));
                     }
                     if(value != null) {
-                        configSubject.attach(new ZookeeperConfigObserver(value, contants));
+                        configSubject.attach(new ZookeeperConfigObserver(f.getName(), contants));
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

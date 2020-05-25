@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ZookeeperConfigSubject implements ConfigSubject {
 
-    private static final String PRE_PATH = "/local/host/";
+    private static final String PRE_PATH = "/localhost/config/";
 
     /**
      * 观察者
